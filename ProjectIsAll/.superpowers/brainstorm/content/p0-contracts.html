@@ -1,0 +1,172 @@
+﻿<h2>P0: Smart Contract Architecture</h2>
+<p class="subtitle">4 contracts, 1 deployment script, 1 test suite</p>
+
+<div class="section">
+  <h3>Contract Layout &mdash; Inheritance &amp; Dependencies</h3>
+  <div class="mockup">
+    <div class="mockup-header">Foundry project structure</div>
+    <div class="mockup-body">
+<pre style="font-size:12px;line-height:1.5;background:#0d1117;padding:16px;border-radius:6px;color:#c9d1d9">
+src/
+  PlatformToken.sol      ERC20 with capped supply + owner mint
+  TaskCrowdfund.sol       State machine: 5 phases
+  MultisigVerifier.sol    3/5 signature validation
+  interfaces/
+    IUniswapV3Swap.sol    Swap router interface
+script/
+  Deploy.s.sol            Deploy to Sepolia
+test/
+  PlatformToken.t.sol
+  TaskCrowdfund.t.sol
+  MultisigVerifier.t.sol
+</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Contract 1: PlatformToken (ERC20)</h3>
+  <div class="mockup">
+    <div class="mockup-header">Dependencies: OpenZeppelin ERC20, Ownable</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+        <div style="background:#1a1a2e;padding:12px;border-radius:6px">
+          <strong style="color:#81c784">I write</strong>
+          <ul style="color:#999;margin:6px 0 0 16px;padding:0">
+            <li>ERC20 boilerplate (name, symbol, decimals)</li>
+            <li>Constructor with initial supply</li>
+            <li>Mint-only-by-owner guard</li>
+          </ul>
+        </div>
+        <div style="background:#1a1a2e;padding:12px;border-radius:6px">
+          <strong style="color:#ffb74d">You fill in</strong>
+          <ul style="color:#999;margin:6px 0 0 16px;padding:0">
+            <li>Supply cap enforcement in mint()</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Contract 2: TaskCrowdfund (Core State Machine)</h3>
+  <div class="mockup">
+    <div class="mockup-header">5-phase lifecycle with crowdfunding pool</div>
+    <div class="mockup-body">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;margin-bottom:14px">
+        <div style="background:#1a1a2e;padding:8px 10px;border-radius:4px;border-left:3px solid #4fc3f7"><strong style="color:#4fc3f7">CROWDFUNDING</strong><br/><small style="color:#888">Accepting funds</small></div>
+        <div style="color:#555;align-self:center">&rarr;</div>
+        <div style="background:#1a1a2e;padding:8px 10px;border-radius:4px;border-left:3px solid #81c784"><strong style="color:#81c784">ACTIVE</strong><br/><small style="color:#888">Ready for claims</small></div>
+        <div style="color:#555;align-self:center">&rarr;</div>
+        <div style="background:#1a1a2e;padding:8px 10px;border-radius:4px;border-left:3px solid #ffb74d"><strong style="color:#ffb74d">IN_PROGRESS</strong><br/><small style="color:#888">Dev working</small></div>
+        <div style="color:#555;align-self:center">&rarr;</div>
+        <div style="background:#1a1a2e;padding:8px 10px;border-radius:4px;border-left:3px solid #ce93d8"><strong style="color:#ce93d8">UNDER_REVIEW</strong><br/><small style="color:#888">Multisig voting</small></div>
+        <div style="color:#555;align-self:center">&rarr;</div>
+        <div style="background:#1a1a2e;padding:8px 10px;border-radius:4px;border-left:3px solid #ff8a80"><strong style="color:#ff8a80">SETTLED</strong><br/><small style="color:#888">Final</small></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+        <div style="background:#1a1a2e;padding:12px;border-radius:6px">
+          <strong style="color:#81c784">I write</strong>
+          <ul style="color:#999;margin:6px 0 0 16px;padding:0">
+            <li>Task struct + Status enum</li>
+            <li>Event definitions for all state changes</li>
+            <li>Modifiers (onlyPublisher, inStatus, etc.)</li>
+            <li>publishTask() scaffolding</li>
+          </ul>
+        </div>
+        <div style="background:#1a1a2e;padding:12px;border-radius:6px">
+          <strong style="color:#ffb74d">You fill in</strong>
+          <ul style="color:#999;margin:6px 0 0 16px;padding:0">
+            <li>contribute() &mdash; add funds, check goal, transition</li>
+            <li>claimTask() &mdash; assign developer</li>
+            <li>submitForReview() &mdash; transition to review</li>
+            <li>settle() &mdash; multisig-triggered payout logic</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Contract 3: MultisigVerifier</h3>
+  <div class="mockup">
+    <div class="mockup-header">3-of-5 ECDSA signature verification</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+        <div style="background:#1a1a2e;padding:12px;border-radius:6px">
+          <strong style="color:#81c784">I write</strong>
+          <ul style="color:#999;margin:6px 0 0 16px;padding:0">
+            <li>Signer storage + event on change</li>
+            <li>Signature struct (v, r, s)</li>
+            <li>Hash construction helper</li>
+          </ul>
+        </div>
+        <div style="background:#1a1a2e;padding:12px;border-radius:6px">
+          <strong style="color:#ffb74d">You fill in</strong>
+          <ul style="color:#999;margin:6px 0 0 16px;padding:0">
+            <li>verify() &mdash; check 3 valid ECDSA sigs from 5 signers</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Contract 4: SwapRouter (Uniswap V3)</h3>
+  <div class="mockup">
+    <div class="mockup-header">Facilitates ETH &harr; PIA token swaps</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+        <div style="background:#1a1a2e;padding:12px;border-radius:6px">
+          <strong style="color:#81c784">I write</strong>
+          <ul style="color:#999;margin:6px 0 0 16px;padding:0">
+            <li>ISwapRouter + IQuoter interfaces</li>
+            <li>Pool creation + initial liquidity setup</li>
+            <li>WETH address (Sepolia)</li>
+          </ul>
+        </div>
+        <div style="background:#1a1a2e;padding:12px;border-radius:6px">
+          <strong style="color:#ffb74d">You fill in</strong>
+          <ul style="color:#999;margin:6px 0 0 16px;padding:0">
+            <li>swapETHForTokens() &mdash; exactInputSingle</li>
+            <li>swapTokensForETH() &mdash; exactInputSingle reverse</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Your Fill-in Tasks Summary</h3>
+  <div class="mockup">
+    <div class="mockup-header">5 hands-on coding exercises</div>
+    <div class="mockup-body">
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <tr style="border-bottom:1px solid #222"><td style="padding:8px;color:#4fc3f7;width:28px">1</td><td style="padding:8px"><strong>Supply cap mint()</strong></td><td style="padding:8px;color:#888;text-align:right">PlatformToken</td><td style="padding:8px;color:#888;text-align:right">~5 lines</td></tr>
+        <tr style="border-bottom:1px solid #222"><td style="padding:8px;color:#4fc3f7">2</td><td style="padding:8px"><strong>contribute() + goal reached transition</strong></td><td style="padding:8px;color:#888;text-align:right">TaskCrowdfund</td><td style="padding:8px;color:#888;text-align:right">~15 lines</td></tr>
+        <tr style="border-bottom:1px solid #222"><td style="padding:8px;color:#4fc3f7">3</td><td style="padding:8px"><strong>claimTask() + submitForReview()</strong></td><td style="padding:8px;color:#888;text-align:right">TaskCrowdfund</td><td style="padding:8px;color:#888;text-align:right">~15 lines</td></tr>
+        <tr style="border-bottom:1px solid #222"><td style="padding:8px;color:#4fc3f7">4</td><td style="padding:8px"><strong>settle() with multisig-triggered payout</strong></td><td style="padding:8px;color:#888;text-align:right">TaskCrowdfund</td><td style="padding:8px;color:#888;text-align:right">~20 lines</td></tr>
+        <tr style="border-bottom:1px solid #222"><td style="padding:8px;color:#4fc3f7">5</td><td style="padding:8px"><strong>verify() 3/5 ECDSA + swap functions</strong></td><td style="padding:8px;color:#888;text-align:right">Multisig + Swap</td><td style="padding:8px;color:#888;text-align:right">~25 lines</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Pre-requisites for You</h3>
+  <div class="mockup">
+    <div class="mockup-header">Before we scaffold</div>
+    <div class="mockup-body">
+      <ul style="color:#999;font-size:13px;margin:4px 0 0 16px;padding:0">
+        <li>Foundry installed: <code style="color:#4fc3f7">curl -L https://foundry.paradigm.xyz | bash</code></li>
+        <li>Sepolia RPC URL in <code style="color:#4fc3f7">.env</code></li>
+        <li>Wallet private key for deployment (never committed)</li>
+        <li>Test ETH from Sepolia faucet</li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+﻿<h2>ProjectIsAll &mdash; System Architecture</h2>
+<p class="subtitle">A task crowdfunding platform with 6 independent subsystems</p>
+
+<div class="section">
+  <h3>Recommended Subproject Decomposition Order</h3>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="P0">
+    <div class="letter">P0</div>
+    <div class="content">
+      <h3>Smart Contracts</h3>
+      <p>ERC20 platform token, crowdfunding contract, multisig verification, Uniswap V3 pools &mdash; the trust foundation of the entire platform</p>
+    </div>
+  </div>
+  <div class="option" data-choice="P1">
+    <div class="letter">P1</div>
+    <div class="content">
+      <h3>Frontend DApp</h3>
+      <p>Task publish page, crowdfunding panel, task board, multisig verification UI &mdash; everything users directly interact with</p>
+    </div>
+  </div>
+  <div class="option" data-choice="P2">
+    <div class="letter">P2</div>
+    <div class="content">
+      <h3>Backend Indexer</h3>
+      <p>On-chain event indexing (The Graph or self-built), task metadata storage, user data API</p>
+    </div>
+  </div>
+  <div class="option" data-choice="P3">
+    <div class="letter">P3</div>
+    <div class="content">
+      <h3>Design System</h3>
+      <p>Component library, brand assets, dark/light themes &mdash; visual foundation for the DApp</p>
+    </div>
+  </div>
+  <div class="option" data-choice="P4">
+    <div class="letter">P4</div>
+    <div class="content">
+      <h3>Testing &amp; Deployment</h3>
+      <p>Contract unit tests, integration tests, testnet deployment scripts, CI/CD pipeline</p>
+    </div>
+  </div>
+  <div class="option" data-choice="P5">
+    <div class="letter">P5</div>
+    <div class="content">
+      <h3>Docs &amp; Whitepaper</h3>
+      <p>Tokenomics whitepaper, developer docs, user guide</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Core Business Flow &mdash; Task Crowdfunding Lifecycle</h3>
+  <div class="mockup">
+    <div class="mockup-header">5 Phases of State Transitions</div>
+    <div class="mockup-body">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:13px;line-height:1.6;color:#e0e0e0">
+        <div style="background:#1a1a2e;padding:14px 16px;border-radius:6px;flex:1;min-width:120px;border-left:3px solid #4fc3f7">
+          <strong style="color:#4fc3f7">1. Publish</strong><br/>
+          <small style="color:#999">Creator stakes tokens<br/>Describes task &amp; bounty</small>
+        </div>
+        <div style="color:#555;align-self:center;font-size:22px;font-weight:bold">&rarr;</div>
+        <div style="background:#1a1a2e;padding:14px 16px;border-radius:6px;flex:1;min-width:120px;border-left:3px solid #81c784">
+          <strong style="color:#81c784">2. Crowdfund</strong><br/>
+          <small style="color:#999">Community funds<br/>Activates on goal met</small>
+        </div>
+        <div style="color:#555;align-self:center;font-size:22px;font-weight:bold">&rarr;</div>
+        <div style="background:#1a1a2e;padding:14px 16px;border-radius:6px;flex:1;min-width:120px;border-left:3px solid #ffb74d">
+          <strong style="color:#ffb74d">3. Build</strong><br/>
+          <small style="color:#999">Dev claims task<br/>Submits deliverables</small>
+        </div>
+        <div style="color:#555;align-self:center;font-size:22px;font-weight:bold">&rarr;</div>
+        <div style="background:#1a1a2e;padding:14px 16px;border-radius:6px;flex:1;min-width:120px;border-left:3px solid #ce93d8">
+          <strong style="color:#ce93d8">4. Multisig Verify</strong><br/>
+          <small style="color:#999">N/M signatures<br/>Review &amp; approve</small>
+        </div>
+        <div style="color:#555;align-self:center;font-size:22px;font-weight:bold">&rarr;</div>
+        <div style="background:#1a1a2e;padding:14px 16px;border-radius:6px;flex:1;min-width:120px;border-left:3px solid #ff8a80">
+          <strong style="color:#ff8a80">5. Settlement</strong><br/>
+          <small style="color:#999">Pass &rarr; transfer<br/>Fail &rarr; re-list<br/>Timeout &rarr; auto-release</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Tech Stack Mapping</h3>
+  <div class="mockup">
+    <div class="mockup-header">Per-layer Technical Components</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;font-size:13px">
+        <div style="background:#1a1a2e;padding:14px;border-radius:6px;border-top:2px solid #4fc3f7">
+          <strong style="color:#4fc3f7">Contract Layer</strong><br/>
+          <small style="color:#999">Solidity &bull; ERC20 &bull; Uniswap V3 &bull; MultiSig &bull; Foundry</small>
+        </div>
+        <div style="background:#1a1a2e;padding:14px;border-radius:6px;border-top:2px solid #81c784">
+          <strong style="color:#81c784">Frontend DApp</strong><br/>
+          <small style="color:#999">Next.js &bull; wagmi &bull; RainbowKit &bull; Tailwind CSS</small>
+        </div>
+        <div style="background:#1a1a2e;padding:14px;border-radius:6px;border-top:2px solid #ffb74d">
+          <strong style="color:#ffb74d">Indexer Layer</strong><br/>
+          <small style="color:#999">The Graph / Ponder &bull; PostgreSQL &bull; REST/GraphQL</small>
+        </div>
+        <div style="background:#1a1a2e;padding:14px;border-radius:6px;border-top:2px solid #ce93d8">
+          <strong style="color:#ce93d8">DevOps</strong><br/>
+          <small style="color:#999">Foundry Ignition &bull; Vercel &bull; GitHub Actions &bull; Sepolia</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
