@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
 import {console} from "./console.sol";
@@ -9,7 +9,10 @@ contract Test {
 
     function assertEq(uint256 a, uint256 b) internal pure { require(a == b, "assertEq failed"); }
     function assertEq(address a, address b) internal pure { require(a == b, "assertEq failed"); }
+    function assertEq(uint256 a, uint256 b, string memory err) internal pure { require(a == b, err); }
+    function assertEq(address a, address b, string memory err) internal pure { require(a == b, err); }
     function assertTrue(bool condition) internal pure { require(condition, "assertTrue failed"); }
+    function assertTrue(bool condition, string memory err) internal pure { require(condition, err); }
     function assertFalse(bool condition) internal pure { require(!condition, "assertFalse failed"); }
 
     // cheatcodes via forge VM
@@ -25,7 +28,12 @@ interface Vm {
     function prank(address) external;
     function startPrank(address) external;
     function stopPrank() external;
+    function warp(uint256) external;
     function deal(address, uint256) external;
+    function startBroadcast() external;
+    function startBroadcast(address) external;
+    function startBroadcast(uint256) external;
+    function stopBroadcast() external;
     function expectRevert() external;
     function expectRevert(bytes calldata) external;
     function envUint(string calldata) external view returns (uint256);
